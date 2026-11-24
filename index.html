@@ -891,5 +891,38 @@ window.addEventListener("load",()=>{
  }
 });
 </script>
+
+<script>
+/* РОУТЕР ХЭШЕЙ «НУМЕН» — связка с зином:
+   ссылки вида .../nymen/#vliyanie открывают досье автоматически */
+(function(){
+  var MAP = {
+    vliyanie:"berneys",        /* [влияние]   -> Эдвард Бернейс */
+    krasota:"chanel",          /* красота     -> Коко Шанель */
+    mudrost:"wintour",         /* [мудрость]  -> Анна Винтур */
+    bezumie:"dali",            /* [безумие]   -> Сальвадор Дали */
+    izobretatelnost:"musk",    /* изобретательность -> Илон Маск */
+    svoboda:"esenin",          /* [свобода]   -> Сергей Есенин */
+    zhelanie:"ysl",            /* [желание]   -> Ив Сен-Лоран */
+    bessmertie:"mayak",        /* бессмертие  -> Маяковский */
+    bart:"barthes",            /* Ролан Барт  -> смотритель архива */
+    grom:"zagadka", zhizn:"zagadka", smert:"zagadka",
+    sezony:"zagadka", dobro:"zagadka", start:""
+  };
+  function route(){
+    var h = (location.hash||"").replace("#","").toLowerCase();
+    if(!h || !(h in MAP)) return;
+    if(MAP[h]){
+      setTimeout(function(){ try{ openDossier(MAP[h]); }catch(e){} }, 400);
+    } else {
+      var el = document.getElementById(MAP[h]) || document.body;
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior:"smooth"});
+    }
+  }
+  window.addEventListener("hashchange", route);
+  if(document.readyState === "complete") route();
+  else window.addEventListener("load", route);
+})();
+</script>
 </body>
 </html>
