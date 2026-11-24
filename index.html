@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>НУМЕН · Интерактивный атлас современных богов</title>
+<meta name="description" content="Человечество никогда не переставало верить в мифы — оно лишь научилось производить их самостоятельно. Пантеон нового времени и машина, которая собирает миф прямо при вас.">
+<meta property="og:title" content="НУМЕН — интерактивный атлас современных богов">
+<meta property="og:description" content="Восемь имён, которые вы знаете наизусть, и один механизм, который вы не замечали. К финалу вы соберёте новый миф сами.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0b0b0d; --ink2:#101014; --paper:#f2efe6; --dim:#9a968c;
+  --blue:#2f5fe0; --sky:#8fb2ff; --line:rgba(242,239,230,.14);
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:'Manrope',system-ui,sans-serif;font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+::selection{background:var(--blue);color:#fff}
+a{color:var(--sky)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.wrap{padding:0 18px}}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:50;background:rgba(11,11,13,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0;flex-wrap:wrap}
+.doc{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+nav{display:flex;gap:26px;flex-wrap:wrap}
+nav a{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--paper);text-decoration:none;opacity:.75;transition:.2s}
+nav a:hover{opacity:1;color:var(--sky)}
+@media(max-width:860px){nav{gap:14px}.doc{font-size:10px}}
+
+/* HERO */
+.hero{padding:96px 0 70px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:
+ radial-gradient(700px 340px at 82% -10%, rgba(47,95,224,.16), transparent 65%),
+ radial-gradient(520px 300px at 0% 110%, rgba(47,95,224,.08), transparent 60%);pointer-events:none}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--sky);text-transform:uppercase;margin-bottom:26px}
+h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(64px,14vw,172px);line-height:.94;letter-spacing:.04em}
+h1 .dot{color:var(--blue)}
+.lede{max-width:680px;margin-top:34px;font-size:19px;color:var(--paper)}
+.lede b{font-weight:500;color:#fff}
+.gap{max-width:680px;margin-top:26px;font-size:15.5px;color:var(--dim)}
+.gap em{color:var(--sky);font-style:normal;border-bottom:1px solid rgba(143,178,255,.4)}
+.hero-cta{display:inline-block;margin-top:38px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--paper);padding:14px 26px;text-decoration:none;transition:.2s}
+.hero-cta:hover{background:var(--sky)}
+
+/* SECTIONS */
+section{padding:80px 0;border-top:1px solid var(--line)}
+.snum{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;color:var(--blue);text-transform:uppercase}
+h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.05;margin:12px 0 22px}
+.sub{max-width:660px;color:var(--dim);font-size:16px}
+.note{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--dim);margin-top:22px;text-transform:uppercase}
+
+/* PANTHEON */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;margin-top:46px}
+.card{border:1px solid var(--line);background:var(--ink2);cursor:pointer;transition:.25s;overflow:hidden}
+.card:hover{border-color:rgba(143,178,255,.5);transform:translateY(-3px)}
+.ph{position:relative;aspect-ratio:4/4.6;overflow:hidden;background:#17171b}
+.ph img{width:100%;height:100%;object-fit:cover;object-position:top;filter:grayscale(1) contrast(1.08) brightness(.82);transition:.5s}
+.card:hover .ph img{filter:grayscale(.15) contrast(1.05) brightness(.95);transform:scale(1.03)}
+.mono-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:64px;color:#3a3a42;background:linear-gradient(160deg,#17171b,#101014)}
+.ph .tag{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--paper);background:rgba(11,11,13,.82);padding:5px 10px;border:1px solid rgba(242,239,230,.25);text-transform:uppercase}
+.cbody{padding:20px 20px 24px}
+.cname{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500}
+.crole{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--sky);text-transform:uppercase;margin-top:6px}
+.cmore{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--dim)}
+
+/* DOSSIER MODAL */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow-y:auto;background:rgba(5,5,7,.8);backdrop-filter:blur(6px)}
+.modal.open{display:flex}
+.sheet{max-width:640px;width:100%;background:var(--ink2);border:1px solid var(--line);padding:34px;position:relative;margin-bottom:6vh}
+@media(max-width:560px){.sheet{padding:24px 18px}}
+.x{position:absolute;top:14px;right:16px;background:none;border:1px solid var(--line);color:var(--dim);font-family:var(--mono);font-size:13px;padding:6px 11px;cursor:pointer}
+.x:hover{color:var(--paper);border-color:var(--sky)}
+.sheet .row{display:flex;gap:24px;margin-bottom:22px}
+.sheet .row img,.sheet .row .mono-fallback{width:120px;aspect-ratio:4/5;object-fit:cover;object-position:top;filter:grayscale(1) brightness(.9);flex-shrink:0;border:1px solid var(--line)}
+@media(max-width:560px){.sheet .row{flex-direction:column}}
+.dlabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--sky);text-transform:uppercase;margin:18px 0 6px}
+.dtext{color:#d8d4ca;font-size:15px}
+.dquote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--paper);border-left:2px solid var(--blue);padding-left:16px;margin-top:18px}
+.dlink{display:inline-block;margin-top:22px;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--sky);text-transform:uppercase;text-decoration:none;border-bottom:1px solid rgba(143,178,255,.4)}
+
+/* MACHINE */
+.machine{border:1px solid var(--line);background:var(--ink2);padding:34px;margin-top:46px}
+@media(max-width:560px){.machine{padding:22px 16px}}
+.mk label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+.kinds{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.kinds button{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;padding:9px 16px;background:none;border:1px solid var(--line);color:var(--dim);cursor:pointer;transition:.2s}
+.kinds button.on{color:var(--ink);background:var(--paper);border-color:var(--paper)}
+#inp{width:100%;background:#0b0b0d;border:1px solid var(--line);color:var(--paper);font-family:'Cormorant Garamond',serif;font-size:26px;padding:16px 18px;outline:none;transition:.2s}
+#inp:focus{border-color:var(--blue)}
+#inp::placeholder{color:#4c4c55;font-size:20px}
+.run{margin-top:18px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;background:var(--blue);color:#fff;border:none;padding:16px 30px;cursor:pointer;transition:.2s}
+.run:hover{background:var(--sky);color:var(--ink)}
+.run:disabled{opacity:.45;cursor:default}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chips button{font-family:var(--mono);font-size:11px;color:var(--dim);background:none;border:1px solid var(--line);padding:6px 12px;cursor:pointer;transition:.2s}
+.chips button:hover{color:var(--sky);border-color:var(--sky)}
+.chain{margin-top:34px}
+.step{opacity:0;transform:translateY(14px);transition:.6s;border-top:1px solid var(--line);padding:22px 0}
+.step.vis{opacity:1;transform:none}
+.step .sn{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--blue);text-transform:uppercase}
+.step h4{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;margin:8px 0 8px}
+.step p{color:#d8d4ca;font-size:15.5px}
+.step .arrow{font-family:var(--mono);color:var(--dim);font-size:12px;margin-top:10px;letter-spacing:.1em}
+.cert{margin-top:30px;border:1px solid var(--sky);padding:28px;opacity:0;transform:translateY(14px);transition:.7s;background:linear-gradient(160deg,rgba(47,95,224,.09),transparent 55%)}
+.cert.vis{opacity:1;transform:none}
+.cert .cn{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;line-height:1.1}
+.cert .cd{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--sky);text-transform:uppercase;margin:6px 0 16px}
+.cert p{color:#d8d4ca;font-size:15px;margin-bottom:10px}
+.cert .mono-fallback,.cert .cp{width:96px;aspect-ratio:1;object-fit:cover;filter:grayscale(1);border:1px solid var(--sky);margin-bottom:14px}
+.cert .mono-fallback{display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--sky)}
+.certbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.certbtns button{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;padding:11px 18px;background:none;border:1px solid var(--sky);color:var(--sky);cursor:pointer;transition:.2s}
+.certbtns button:hover{background:var(--sky);color:var(--ink)}
+.certbtns button.done{background:var(--sky);color:var(--ink)}
+.p2{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dim);margin-top:24px;line-height:1.8}
+
+/* REVELATION */
+.src{border-top:1px solid var(--line);padding:24px 0;display:grid;grid-template-columns:150px 1fr auto;gap:18px;align-items:start}
+@media(max-width:640px){.src{grid-template-columns:1fr}}
+.src .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.src .h{font-family:'Cormorant Garamond',serif;font-size:21px}
+.src .d{font-size:14px;color:var(--dim);margin-top:4px}
+.src a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--sky);text-transform:uppercase;text-decoration:none;white-space:nowrap;border-bottom:1px solid rgba(143,178,255,.4)}
+
+/* FOOTER */
+footer{padding:90px 0 60px;border-top:1px solid var(--line);text-align:center}
+footer .q{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(28px,5vw,44px)}
+footer .f2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--dim);margin-top:26px;text-transform:uppercase}
+footer .f3{font-family:var(--mono);font-size:10.5px;color:#4c4c55;margin-top:34px;max-width:620px;margin-left:auto;margin-right:auto;line-height:1.8}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap topbar">
+<div class="doc">АРХИВ СОВРЕМЕННЫХ БОГОВ · ДОКУМЕНТ № 001 · ДОСТУП: ОБЩИЙ</div>
+<nav>
+<a href="#zagadka">01 · ЗАГАДКА</a>
+<a href="#pantheon">02 · НЕИЗВЕСТНЫЙ ФИНАЛ</a>
+<a href="#mashina">03 · НАРУШЕНИЕ</a>
+<a href="#raskrytie">04 · РАСКРЫТИЕ</a>
+</nav>
+</div>
+</header>
+
+<div class="hero">
+<div class="wrap">
+<div class="kicker">Культура и миф · проект «НУМЕН»</div>
+<h1>НУМЕН<span class="dot">.</span></h1>
+<p class="lede"><b>Интерактивный атлас современных богов.</b> Человечество никогда не переставало верить в мифы — оно лишь научилось производить их самостоятельно. «Нумен» — ещё одна попытка понять, как формируется пантеон нового времени.</p>
+<p class="gap">Впереди — <em>восемь имён, которые вы знаете наизусть</em>, и один механизм, который вы, скорее всего, никогда не замечали. К финалу вы увидите, кто на самом деле собирает вашу собственную версию себя, — и запустите этот механизм на любом имени, вещи или явлении. Архив открывается.</p>
+<a class="hero-cta" href="#zagadka">Войти в архив ↓</a>
+</div>
+</div>
+
+<!-- 01 · ЗАГАДКА -->
+<section id="zagadka">
+<div class="wrap">
+<div class="snum">01 · ЗАГАДКА</div>
+<h2>Кто наши боги?</h2>
+<p class="sub">Мы привыкли думать, что миф остался в античности. Но сегодня у мифа другие инструменты, другие герои и другие пространства поклонения. Люди становятся воплощением свободы, красоты, власти или бунта — и их образ начинает жить собственной жизнью, порой важнее самой биографии.</p>
+<p class="sub" style="margin-top:18px">Этот атлас прослеживает, как культура превращает реальных людей в мифологические образы. А в разделе «Машина» вы проверите механизм на себе: введите любое имя, вещь или явление — и проследите, как из него шаг за шагом собирается миф.</p>
+</div>
+</section>
+
+<!-- 02 · ПАНТЕОН -->
+<section id="pantheon">
+<div class="wrap">
+<div class="snum">02 · НЕИЗВЕСТНЫЙ ФИНАЛ</div>
+<h2>Пантеон</h2>
+<p class="sub">Божества нового времени и смотритель архива. Сопоставления основаны на символических функциях, а не на внешнем сходстве — это авторская исследовательская интерпретация, а не утверждение о тождестве.</p>
+<div class="note" id="pantNote">АРХИВ ПОПОЛНЯЕТСЯ · НИЖНЕЕ ДОСЬЕ В РАЗДЕЛЕ «МАШИНА» — ВАШЕ</div>
+<div class="grid" id="grid"></div>
+</div>
+</section>
+
+<!-- 03 · МАШИНА -->
+<section id="mashina">
+<div class="wrap">
+<div class="snum">03 · НАРУШЕНИЕ ОЖИДАНИЯ</div>
+<h2>Машина мифологизации</h2>
+<p class="sub">Введите любое имя, вещь или явление — и посмотрите, как культура собирает из него миф: знак → означающее → вторичное значение → товар. Так работает вторичная система означивания Ролана Барта, только здесь она становится видимой. Для известных имён и явлений в архиве есть готовые досье с точными тезисами; для прочего машина построит обоснованную гипотезу.</p>
+
+<div class="machine">
+<label>Что мифологизируем?</label>
+<div class="kinds">
+<button class="on" data-kind="thing">Вещь</button>
+<button data-kind="person">Личность</button>
+<button data-kind="idea">Явление</button>
+</div>
+<input id="inp" placeholder="матча, деньги, Маск, любовь…" autocomplete="off">
+<div class="chips" id="chips"></div>
+<button class="run" id="run">Запустить мифологизацию</button>
+
+<div class="chain" id="chain"></div>
+
+<div class="cert" id="cert">
+<div id="certImg"></div>
+<div class="cn" id="certName"></div>
+<div class="cd" id="certDesc"></div>
+<div id="certBody"></div>
+<div class="certbtns">
+<button id="shareBtn">Скопировать ссылку на божество</button>
+<button id="addBtn">Внести в пантеон</button>
+<button id="againBtn">Разобрать другое</button>
+</div>
+</div>
+
+<p class="p2">Машина — художественная модель, а не научный прогноз. Для слов из архива она выдаёт точные тезисы; для прочего собирает результат из авторского банка архетипов детерминированно: одно и то же слово всегда даёт один и тот же миф, поэтому ссылкой на своё «божество» можно делиться. Никакие данные никуда не отправляются — всё работает прямо в браузере.</p>
+</div>
+</div>
+</section>
+
+<!-- 04 · РАСКРЫТИЕ -->
+<section id="raskrytie">
+<div class="wrap">
+<div class="snum">04 · ДРУГОЙ ЗНАЕТ БОЛЬШЕ</div>
+<h2>Кто создаёт твоё «я»?</h2>
+<p class="sub">За привычными культурными образами скрывается механизм, который можно описать. Теоретическая опора проекта — концепция мифа Ролана Барта; композиция построена на теории информационного дефицита Джорджа Лёвенштейна.</p>
+
+<div class="src"><div class="t">Главная опора · 1957</div><div><div class="h">Ролан Барт. «Мифологии»</div><div class="d">Миф как вторичная семиологическая система: существующий знак получает дополнительное культурное значение.</div></div><a href="https://ru.wikipedia.org/wiki/Мифологии" target="_blank" rel="noopener">→ Источник</a></div>
+<div class="src"><div class="t">Устройство знака</div><div><div class="h">Ролан Барт. «Основы семиологии»</div><div class="d">Означающее, означаемое и принципы формирования значений — та цепочка, по которой работает Машина.</div></div><a href="https://ru.wikipedia.org/wiki/Основы_семиологии" target="_blank" rel="noopener">→ Источник</a></div>
+<div class="src"><div class="t">Методология зина</div><div><div class="h">Джордж Лёвенштейн. The Psychology of Curiosity (1994)</div><div class="d">Любопытство рождается из разрыва между известным и желанным. Мы используем это как принцип проектирования читательского опыта.</div></div><a href="https://doi.org/10.1037/0033-2909.116.1.75" target="_blank" rel="noopener">→ DOI</a></div>
+<div class="src"><div class="t">Философия мифа</div><div><div class="h">А. Ф. Лосев. «Диалектика мифа»</div><div class="d">Миф как непосредственная реальность личной веры, а не просто жанр повествования.</div></div><a href="https://ru.wikipedia.org/wiki/Диалектика_мифа" target="_blank" rel="noopener">→ Источник</a></div>
+<div class="src"><div class="t">Символические формы</div><div><div class="h">Э. Кассирер. «Философия символических форм»</div><div class="d">Человек как «символическое животное»: культура создаёт посредников между нами и миром.</div></div><a href="https://ru.wikipedia.org/wiki/Философия_символических_форм" target="_blank" rel="noopener">→ Источник</a></div>
+<div class="src"><div class="t">Живой нарратив</div><div><div class="h">М. Элиаде. «Аспекты мифа»</div><div class="d">Миф как живой нарратив культуры, а не пережиток древности.</div></div><a href="https://ru.wikipedia.org/wiki/Аспекты_мифа" target="_blank" rel="noopener">→ Источник</a></div>
+</div>
+</section>
+
+<footer>
+<div class="wrap">
+<div class="q">Какой миф создадите вы?</div>
+<div class="f2">ПРОЕКТ «НУМЕН» · КУЛЬТУРА И МИФ · 2026</div>
+<div class="f3">ЧТОБЫ ДОБАВИТЬ НОВОГО БОГА В АТЛАС — ДОПОЛНИТЕ МАССИВ GODS В КОДЕ ИЛИ ВНЕСИТЕ КУЛЬТ ЧЕРЕЗ МАШИНУ МИФОЛОГИЗАЦИИ</div>
+</div>
+</footer>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"><button class="x" id="closeX">ЗАКРЫТЬ ✕</button><div id="sheetBody"></div></div></div>
+
+<script>
+// ============ ПАНТЕОН ============
+const CP = "https://commons.wikimedia.org/wiki/Special:FilePath/";
+const img = (n,w)=>CP+encodeURIComponent(n)+"?width="+(w||420);
+
+const GODS = [
+ {id:"berneys", domain:"ВЛИЯНИЕ", person:"Эдвард Бернейс", antik:"Зевс — власть без манифеста",
+  mechanism:"Инженерия согласия: события, которые легко перепечатывают газеты.",
+  note:"Одного его прикосновения было достаточно, чтобы неизвестное имя услышали миллионы, а вчерашнего героя забыли за одну ночь.",
+  who:"Племянник Фрейда и отец пиара. В 1920-е доказал, что общественное мнение — ресурс, который можно проектировать: от «факелов свободы» для сигарет до согласия на войны.",
+  myth:"Культура видит в нём не исторического консультанта, а воплощение невидимой власти над чужим вниманием.",
+  wiki:"https://ru.wikipedia.org/wiki/Бернейс,_Эдвард", image:"Edward Bernays cropped.png"},
+ {id:"chanel", domain:"КРАСОТА", person:"Коко Шанель", antik:"Афродита — канон совершенства",
+  mechanism:"Канон: униформа, которую все принимают за личный выбор.",
+  note:"Она установила новые каноны совершенства и подарила людям тысячи отражений, в которых можно было искать себя.",
+  who:"Перевернула женский гардероб: маленькое чёрное платье, твидовый костюм, №5. Канон строгой простоты стал языком, на котором женщина говорит «я современна».",
+  myth:"Образ женщины, которая освободилась, чтобы выглядеть свободной; красота, предъявленная как независимость.",
+  wiki:"https://ru.wikipedia.org/wiki/Шанель,_Коко", image:"Coco Chanel, ca 1920.jpg"},
+ {id:"wintour", domain:"МУДРОСТЬ", person:"Анна Винтур", antik:"Афина — хранительница врат",
+  mechanism:"Жюри: одобрение меньшинства становится мнением большинства.",
+  note:"Она говорила голосами экспертов, философов и наставников. Её храмы наполнились советами, инструкциями и готовыми ответами.",
+  who:"37 лет возглавляла американский Vogue. Не дизайнер и не критик — распределитель: чья коллекция пройдёт врата, то станет нормой сезона.",
+  myth:"Мудрость как доступ: ответы выдаются через утверждённого посредника, и это называется «вкус».",
+  wiki:"https://ru.wikipedia.org/wiki/Винтур,_Анна", image:"Anna Wintour.jpg"},
+ {id:"dali", domain:"БЕЗУМИЕ", person:"Сальвадор Дали", antik:"Дионис — ритуал опьянения",
+  mechanism:"Скандал-ритуал: чем абсурднее жест, тем быстрее он становится новостью.",
+  note:"Безумие поселилось в лентах новостей: абсурд стало зрелищем, случайность — сенсацией, а скандал — новой формой славы.",
+  who:"Сюрреалист, чья подпись — усы — узнавалась раньше картин. Превратил собственную жизнь в непрерывное выступление — и это сработало лучше полотен.",
+  myth:"Безумие, поставленное на службу представлению о гениальности: скандальность как вид ясновидения.",
+  wiki:"https://ru.wikipedia.org/wiki/Дали,_Сальвадор", image:"Salvador Dalí 1939.jpg"},
+ {id:"musk", domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", person:"Илон Маск", antik:"Гефест — божественный кузнец",
+  mechanism:"Обещание: миссия оправдывает любой промежуток между словами и результатом.",
+  note:"Она научила машины говорить, изображения — оживать, а человеческие фантазии — принимать видимость реальности.",
+  who:"Ракеты, электромобили, нейросети. Продаёт не только технологии, но и допущение, что будущее — уже запущенный проект.",
+  myth:"Изобретатель, который выносит человечество из истории в будущее; вера в прогресс, которую не проверяют ожиданиями.",
+  wiki:"https://ru.wikipedia.org/wiki/Маск,_Илон", image:"Elon Musk Royal Society.jpg"},
+ {id:"esenin", domain:"СВОБОДОЛЮБИЕ", person:"Сергей Есенин", antik:"Прометей — бунт против железа",
+  mechanism:"Трагический финал превращает жизнь в текст, который невозможно дочитать.",
+  note:"Оно разрушало старые запреты, призывало быть собой и не подчиняться чужим ожиданиям.",
+  who:"«Последний поэт деревни» против железного города. Прожил громко, закончил рано — и именно финал замкнул миф на крошечную, но вечную фигуру бунта с нежностью.",
+  myth:"Свобода как право чувствовать громче, чем разрешает эпоха.",
+  wiki:"https://ru.wikipedia.org/wiki/Есенин,_Сергей", image:"Сергей Есенин (1922).jpg"},
+ {id:"ysl", domain:"ЖЕЛАНИЕ", person:"Ив Сен-Лоран", antik:"Эрот — двигатель недостающего",
+  mechanism:"Демонтаж: культовый предмет объявляет границу устаревшей.",
+  note:"Оно никогда не показывало людям то, что у них уже было. Оно указывало на недостающее: чужую красоту, чужой успех, чужую жизнь.",
+  who:"Смокинг для женщины, saharienne, культовый ар-деко-силуэт. Брал предмет «для других» и делал его твоим — и за этим стояла целая программа эмансипации.",
+  myth:"Желание как признание недостающего и его немедленная закупка.",
+  wiki:"https://ru.wikipedia.org/wiki/Ив_Сен-Лоран", image:"Yves Saint-Laurent at his old studio of the same name, 1961 (cropped).jpg"},
+ {id:"mayak", domain:"БЕССМЕРТИЕ", person:"Владимир Маяковский", antik:"Геракл — громкий подвиг",
+  mechanism:"Архив: лицо, голос и рукопись повторяются до полной независимости от автора.",
+  note:"Оно обещало, что ничто больше не исчезнет: каждое мгновение останется в архивах, каждое имя сможет пережить своего носителя.",
+  who:"Голос на весь зал, жёлтая кофта, революция и рифма. Прожил как событие и оставил после себя текст, который цитируют, не дочитав.",
+  myth:"Бессмертие как обещание: стих останется, когда человека не будет. Сохранившийся образ оказался важнее человека.",
+  wiki:"https://ru.wikipedia.org/wiki/Маяковский,_Владимир", image:"Mayakovsky, Sverdlovsk, 1929.jpg"},
+ {id:"barthes", domain:"СМОТРИТЕЛЬ АРХИВА", person:"Ролан Барт", antik:"Гермес — тот, кто расшифровывает",
+  mechanism:"Расшифровка: каждую «естественную» вещь он делал видимой как конструкцию.",
+  note:"Он не создал миф — он разобрал его. В 1957 году показал, что миф продолжает существовать в газетах, кино, моде и рекламе.",
+  who:"Семиолог, автор «Мифологий» и «Основ семиологии». Дал языку, на котором написан этот сайт: означающее, означаемое, вторичная система.",
+  myth:"Знание как освобождение: когда видишь устройство мифа, перестаёшь верить в него без вопросов.",
+  wiki:"https://ru.wikipedia.org/wiki/Барт,_Ролан", image:"Roland Barthes ca 1970.jpg"}
+];
+</script>
+
+<script>
+// ============ АРХИВ ТОЧНЫХ ДОСЬЕ (Машина) ============
+// Поля: sign(знак) → signifier(означающее) → secondary(вторичное значение) → commodity(товар)
+// + mechanism(механизм), crack(трещина в мифе), proto(античный прототип), epithet(имя), domain, godOf(домен пантеона)
+const CATALOG = [
+{keys:["бернейс","бёрнейс","edward bernays","пиар","pr","пропаганда","рr"], type:"person",
+ epithet:"Бог невидимого согласия", domain:"ВЛИЯНИЕ", proto:"Зевс — власть без манифеста", godOf:"berneys",
+ sign:"Спокойный человек в костюме за столом с бумагами. Ничего не происходит — и в этом всё дело.",
+ signifier:"Эксперт, который знает, чего хотите вы, раньше вас самих.",
+ secondary:"Влияние: власть, которая не приказывает, а «просто предлагает».",
+ commodity:"Продавался не он, а метод: согласие как продукт, который можно закупить.",
+ mechanism:"Инженерия согласия: события сконструированы так, чтобы их легко перепечатывали газеты.",
+ crack:"Сам Бернейс называл это пропагандой — слово потом миф заменил на «PR», и оно перестало пугать."},
+
+{keys:["шанель","коко","chanel","коко шанель","gabrielle"], type:"person",
+ epithet:"Богиня строгой простоты", domain:"КРАСОТА", proto:"Афродита — канон совершенства", godOf:"chanel",
+ sign:"Простое чёрное платье и жемчуг. Ничего лишнего — этим «ничего» она и правит.",
+ signifier:"Женщина, которая освободилась, чтобы выглядеть свободной.",
+ secondary:"Красота как канон: строгость, предъявленная обществом как освобождение.",
+ commodity:"№5 — аромат, который продаёт не запах, а способ быть.",
+ mechanism:"Канон: униформа, которую миллионы принимают за личный выбор.",
+ crack:"Канон диктует границы совершенства — миф называет их стилем, чтобы не объяснять."},
+
+{keys:["винтур","anna wintour","анна винтур","вог","vogue"], type:"person",
+ epithet:"Богиня закрытых врат", domain:"МУДРОСТЬ", proto:"Афина — хранительница врат", godOf:"wintour",
+ sign:"Тёмные очки в помещении. Их не снимают — значит, они не про солнце.",
+ signifier:"Хранитель врат: что пройдёт через журнал, то станет нормой.",
+ secondary:"Мудрость как доступ: ответы выдаёт назначенный распределитель.",
+ commodity:"Обложка: место, где статус превращается в факт.",
+ mechanism:"Жюри: одобрение узкого круга становится «мнением всех».",
+ crack:"Вкус объявляется знанием, хотя на поверку это просто согласованное предпочтение."},
+
+{keys:["дали","dali","сальвадор дали","salvador"], type:"person",
+ epithet:"Бог сконструированного безумия", domain:"БЕЗУМИЕ", proto:"Дионис — ритуал опьянения", godOf:"dali",
+ sign:"Усы, растопыренные как антенны. Он подписывался ими раньше картин.",
+ signifier:"Безумие, поставленное на службу представлению о гениальности.",
+ secondary:"Скандальность как вид ясновидения: «он просто видел раньше других».",
+ commodity:"Ликёр, логотипы, витрины: безумие как товарный знак.",
+ mechanism:"Скандал-ритуал: чем абсурднее жест, тем быстрее он становится новостью.",
+ crack:"Абсурд стал повторяться по расписанию — а повторяющееся безумие уже не безумие, а программа."},
+
+{keys:["маск","илон","elon","musk","tesla","спейсx","spacex"], type:"person",
+ epithet:"Бог обещанного будущего", domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", proto:"Гефест — божественный кузнец", godOf:"musk",
+ sign:"Человек, который в одном дыхании произносит «Марс», «ракета» и «нейросеть».",
+ signifier:"Изобретатель, который выносит человечество из истории в будущее.",
+ secondary:"Вера в прогресс, которую никто не проверяет ожиданиями: миссия оправдывает всё.",
+ commodity:"Акции и подписчики: доля будущего, продаваемая сегодня.",
+ mechanism:"Обещание: пока цель велика, разрыв между словами и результатом не считается.",
+ crack:"Будущее, названное вслух, оказывается проектом с дедлайнами, авариями и дрейфом курса."},
+
+{keys:["есенин","сергей есенин","yesenin","esenin"], type:"person",
+ epithet:"Бог бунта с нежностью", domain:"СВОБОДОЛЮБИЕ", proto:"Прометей — бунт против железа", godOf:"esenin",
+ sign:"Золотистая голова, кудри, расстёгнутый ворот. Поэта легко представить в поле, а не в кабинете.",
+ signifier:"Сельский мальчик, вставший против железного города.",
+ secondary:"Свобода как право чувствовать громче, чем разрешает эпоха.",
+ commodity:"Сборники, исполнения, романтика «последнего поэта деревни».",
+ mechanism:"Трагический финал превращает жизнь в текст, который невозможно дочитать до конца.",
+ crack:"Бунт давно стал сценарием: его воспроизводят студенческие вечера и кино, и он уже никого не пугает."},
+
+{keys:["сен-лоран","ив сен-лоран","yves saint laurent","ysl","сен лоран","сан-лоран"], type:"person",
+ epithet:"Бог купленного желания", domain:"ЖЕЛАНИЕ", proto:"Эрот — двигатель недостающего", godOf:"ysl",
+ sign:"Круглые очки и застенчивая осанка. Стеснительность, за которой строили империю.",
+ signifier:"Смокинг для женщины: предмет, переписавший правило игры.",
+ secondary:"Желание как признание недостающего — и его немедленная закупка.",
+ commodity:"Утилитарная роскошь: пиджак, который обещает силу.",
+ mechanism:"Демонтаж: культовый предмет объявляет границу (мужское/женское) устаревшей.",
+ crack:"Освобождение быстро становится каталогом: желаемое продаётся, и миф это скрывает."},
+
+{keys:["маяковский","владимир маяковский","mayakovsky"], type:"person",
+ epithet:"Бог пережитого образа", domain:"БЕССМЕРТИЕ", proto:"Геракл — громкий подвиг", godOf:"mayak",
+ sign:"Бритая голова, жёлтая кофта, голос, рассчитанный на площадь, а не на комнату.",
+ signifier:"Гром, поставленный на службу революции.",
+ secondary:"Бессмертие как обещание: стих останется, когда человека не будет.",
+ commodity:"Аудиозаписи, портреты, цитаты — образ переживает автора.",
+ mechanism:"Архив: лицо, голос и рукопись повторяются до полной независимости от автора.",
+ crack:"Сохранившийся образ оказался важнее человека: его режут в цитаты, не читая целиком."},
+
+{keys:["барт","ролан барт","barthes","roland barthes"], type:"person",
+ epithet:"Смотритель архива", domain:"РАСКРЫТИЕ", proto:"Гермес — тот, кто расшифровывает", godOf:"barthes",
+ sign:"Спокойный человек с сигаретой и тетрадью. Он не создал миф — он его разобрал.",
+ signifier:"Тот, кто описал механизм мифа изнутри.",
+ secondary:"Знание как освобождение: когда видишь устройство, перестаёшь верить без вопросов.",
+ commodity:"Издания, лекции, цитаты — включая этот сайт.",
+ mechanism:"Расшифровка: каждую «естественную» вещь он делал видимой как конструкцию.",
+ crack:"Барт сам стал цитатой — и механизм мифологизации работает уже на его имени."},
+
+{keys:["джобс","стив джобс","steve jobs","apple","эйпл"], type:"person",
+ epithet:"Бог продолжения руки", domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", proto:"Гефест — божественный кузнец", godOf:"musk",
+ sign:"Чёрная водолазка, джинсы, минимум декора: «минимализм» как подпись.",
+ signifier:"Гений, подаривший будущее в кармане.",
+ secondary:"Техника как продолжение «я», а не инструмент.",
+ commodity:"Устройства, которые продаются как идентичность, а не как техника.",
+ mechanism:"Мистерия презентации: продукт выходит на сцену как откровение.",
+ crack:"Культ создателя сглаживает работу тысяч безымянных — и само устройство мифа об этом умалчивает."},
+
+{keys:["кардашьян","ким кардашьян","kim kardashian","кардашьян ким","кардашьян"], type:"person",
+ epithet:"Богиня непрерывной трансляции", domain:"ВЛИЯНИЕ", proto:"Фама — богиня слуха", godOf:"berneys",
+ sign:"Силуэт, повторяемый в каждом втором аккаунте.",
+ signifier:"Слава, которая существует потому, что её показывают.",
+ secondary:"Обычность в центре: знаменита не заслуга, а видимость заслуги.",
+ commodity:"Аудитория как товар: внимание перепродаётся брендам.",
+ mechanism:"Непрерывность: жизнь снимается как сериал без пауз.",
+ crack:"Образ требует постоянного обслуживания — и за каждым мифом скрывается утомительная рутина."},
+
+{keys:["гагарин","юрий гагарин","gagarin","поехали"], type:"person",
+ epithet:"Бог одной улыбки", domain:"СВОБОДА", proto:"Гелиос — восходящее солнце", godOf:"esenin",
+ sign:"Улыбка в шлеме и слово «Поехали!».",
+ signifier:"Человек, впервые поднявшийся за грань того, что видели все.",
+ secondary:"Доверие к большому проекту: мир может быть лучше, если его всерьёз строить.",
+ commodity:"Портреты, юбилеи, «космические» бренды: улыбка как знак целой эпохи.",
+ mechanism:"Один жест, повторённый миллионами в школах и на плакатах, становится мифом.",
+ crack:"Миф о космосе пережил того, кто в него верил — и уже не требует веры, только повторения."},
+
+{keys:["фрейд","зигмунд фрейд","freud","психоанализ"], type:"person",
+ epithet:"Бог скрытого слоя", domain:"МУДРОСТЬ", proto:"Аполлон — оракул", godOf:"wintour",
+ sign:"Борода, сигара, кабинет с антикварными фигурками.",
+ signifier:"Человек, нашедший в каждом скрытый механизм.",
+ secondary:"Вера, что каждое желание — симптом, а бездна может быть объяснена.",
+ commodity:"Терапия, книги, тесты: самоанализ как услуга.",
+ mechanism:"Язык: термины вроде «бессознательного» стали общими словами.",
+ crack:"Термины вышли из-под контроля автора: «комплекс» теперь объясняет и неудачную любовь, и неудачный пикник."},
+
+{keys:["ницше","friedrich nietzsche","фридрих ницше","сверхчеловек"], type:"person",
+ epithet:"Бог вырванной цитаты", domain:"СВОБОДОЛЮБИЕ", proto:"Прометей — право на свой огонь", godOf:"esenin",
+ sign:"Огромные усы, суровый взгляд, горы на фоне.",
+ signifier:"Философ, который сказал «да» жизни в упор.",
+ secondary:"Право на собственные ценности — даже если это право дорого стоит.",
+ commodity:"Цитаты на плакатах, футболках и в спортзалах.",
+ mechanism:"Афоризм: короткие фразы легко вырвать из контекста и присвоить.",
+ crack:"Обрезанный текст часто значит противоположное оригиналу — миф не читает книги, которые на него ссылаются."},
+
+{keys:["кофе","coffee","эспрессо","латте"], type:"thing",
+ epithet:"Хранитель утреннего ритуала", domain:"ПОРЯДОК", proto:"Гестия — домашний очаг", godOf:"chanel",
+ sign:"Тёмная жидкость в чашке. Первый жест дня, который совершается ещё до слов.",
+ signifier:"Пауза, собранность, «время для себя».",
+ secondary:"«Человек кофе» — тот, кто управляет своим утром, а значит, и жизнью.",
+ commodity:"Продаётся не кофеин, а контроль: подписки на зерно, стаканчики, программы лояльности.",
+ mechanism:"Ритуал: ежедневное повторение превращает привычку в идентичность.",
+ crack:"За ритуалом стоит зависимость, которую миф переименовал в «любовь к вкусу»."},
+
+{keys:["матча","матчa","матча чай","matcha","зелёный чай"], type:"thing",
+ epithet:"Жрица тихой зелени", domain:"ЗНАНИЕ", proto:"Пан — дух сада", godOf:"wintour",
+ sign:"Зелёный порошок и бамбуковый венчик. Пудра, которая стоит дороже пряника.",
+ signifier:"Аскеза японского сада: спокойствие, упакованное в один флакон.",
+ secondary:"Осознанность как редкость: пьющий матчу «видит глубже».",
+ commodity:"Пудра, венчики, «чайные церемонии» в городских кофейнях.",
+ mechanism:"Присвоение традиции: чужая практика становится личным достижением.",
+ crack:"Импорт редко доносит до дома то, что было в истоке: контекст остаётся за границей."},
+
+{keys:["айфон","iphone","смартфон","телефон","apple iphone","эппл"], type:"thing",
+ epithet:"Хранитель связи", domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", proto:"Гермес — проводник", godOf:"musk",
+ sign:"Стеклянная плита, отражающая лицо владельца.",
+ signifier:"Продолжение руки: память, карта, кошелёк и окно в мир.",
+ secondary:"«Человек с телефоном» всегда в курсе — и потому всегда прав.",
+ commodity:"Продаётся не связь, а доступ к версии себя, которая всё успевает.",
+ mechanism:"Ежедневная близость: предмет в кармане становится частью тела.",
+ crack:"Каждый раз, когда вы держите его в руках, вы держите и канал чужих решений."},
+
+{keys:["деньги","деньги богатство","деньги богатство капитал","деньги капитал","богатство","капитал","деньги валют"], type:"idea",
+ epithet:"Бог завтрашнего дня", domain:"ВЛАСТЬ", proto:"Плутос — изобилие", godOf:"berneys",
+ sign:"Бумага и цифры на экране. Ничего съедобного и ничего красивого.",
+ signifier:"Свобода выбора: точка, из которой больше не нужно просить.",
+ secondary:"Человек с деньгами «решает сам» — даже когда решение уже предложено рынком.",
+ commodity:"Кредиты, подписки, инвестиции: обещание, что завтра можно будет сегодня.",
+ mechanism:"Обещание: деньги описывают не настоящее, а будущее.",
+ crack:"Свобода, купленная в долг, обычно остаётся в долгу."},
+
+{keys:["любовь","любовь отношения","любовь романтика","любовь любовь","отношения","влюблённость","влюбленность"], type:"idea",
+ epithet:"Хранитель недостающего", domain:"ЖЕЛАНИЕ", proto:"Эрот — связь", godOf:"ysl",
+ sign:"Два силуэта, соединённые светом — самый старый кадр человечества.",
+ signifier:"Состояние, в котором перестают считать.",
+ secondary:"В любви человек «наконец настоящий»: всё прочее — лишь подготовка.",
+ commodity:"Фильмы, подарки, свадебная индустрия: идеал продаётся как норма.",
+ mechanism:"Сценарий: культура заранее пишет, как должна выглядеть настоящая любовь.",
+ crack:"Реальные отношения редко повторяют сценарий — и терпят поражение именно из-за расхождения с ним."},
+
+{keys:["время","тайм-менеджмент","продуктивность","тайм менеджмент"], type:"idea",
+ epithet:"Бог нехватки", domain:"ВРЕМЯ", proto:"Кронос — время", godOf:"mayak",
+ sign:"Циферблат, равнодушный ко всем. Он не спешит — спешим мы.",
+ signifier:"Ресурс, который «уходит» и который нужно успеть.",
+ secondary:"Управляющий временем «управляет жизнью» — отсюда культ продуктивности.",
+ commodity:"Планировщики, курсы, часы как статус.",
+ mechanism:"Дефицит: то, чего не хватает, немедленно превращается в товар.",
+ crack:"Чем сильнее борьба за время, тем меньше его остаётся на саму жизнь."},
+
+{keys:["смерть","смертность","смерти","кончина"], type:"idea",
+ epithet:"Хранитель последней страницы", domain:"БЕССМЕРТИЕ", proto:"Танатос — конец", godOf:"mayak",
+ sign:"Чёрная рамка в ленте новостей.",
+ signifier:"Граница, за которой невозможно проверить.",
+ secondary:"Смерть делает жизнь «настоящей» — поэтому миф заполняет её смыслом.",
+ commodity:"Клипы, мемориалы, «цитаты великих» в день смерти.",
+ mechanism:"Финальность: то, что закончилось, легко переписать заново.",
+ crack:"Ушедший не может возразить — миф получает последнюю редакцию текста."},
+
+{keys:["слава","известность","знаменитость","фаме","fame","популярность"], type:"idea",
+ epithet:"Бог толпы в одном человеке", domain:"ВЛИЯНИЕ", proto:"Фама — богиня слуха", godOf:"berneys",
+ sign:"Имя, которое узнают на слух, ещё не видя лица.",
+ signifier:"Состояние, при котором незнакомцы знают о вас больше, чем друзья.",
+ secondary:"Слава как подтверждение: «значит, я существую правильно».",
+ commodity:"Внимание: его можно продать, купить и потерять за один скандал.",
+ mechanism:"Повторение: имя произносят до тех пор, пока оно не станет понятием.",
+ crack:"Слава не спрашивает у своих носителей, что они о ней думают."},
+
+{keys:["нейросеть","ии","искусственный интеллект","ai","gpt","чат-бот","нейросети"], type:"idea",
+ epithet:"Бог стёртой границы", domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", proto:"Пандора — выпуск неизвестного", godOf:"musk",
+ sign:"Текст, который пишет сам, и картинка, которой никогда не было.",
+ signifier:"Человеческий ум, лишённый усталости и гордости.",
+ secondary:"Надежда, что сложное станет простым, а выбор — техническим.",
+ commodity:"Подписки, токены, «помощники»: думание как сервис.",
+ mechanism:"Олицетворение: машине приписывают желание — так с ней проще говорить.",
+ crack:"Приписывая машине сознание, человек тихо готовится отдать ей и ответственность."},
+
+{keys:["интернет","сеть","всемирная паутина","онлайн"], type:"idea",
+ epithet:"Бог вечного перехода", domain:"СВОБОДА", proto:"Атлант — держащий небо", godOf:"esenin",
+ sign:"Экран, который всегда на связи.",
+ signifier:"Место, где «всё есть» и «всё можно найти».",
+ secondary:"Свобода информации незаметно превращается в свободу выбора между предложенным.",
+ commodity:"Внимание: время человека продаётся рекламодателям до того, как оно потрачено.",
+ mechanism:"Непрерывность: сеть не выключается, а значит, не отпускает.",
+ crack:"Инструмент, обещавший сократить расстояния, научил людей жить в отдельных пузырях."},
+
+{keys:["инстаграм","instagram","соцсети","социальные сети","тикток","tiktok","фейсбук","facebook","вк","вконтакте"], type:"idea",
+ epithet:"Бог чужой витрины", domain:"КРАСОТА", proto:"Нарцисс — отражение", godOf:"chanel",
+ sign:"Лента, в которой чужая жизнь выглядит собранной.",
+ signifier:"Кадр, в котором всё удачно.",
+ secondary:"«У других получается» — миф, который заставляет сверять свою жизнь с чужой витриной.",
+ commodity:"Ваши глаза: время в ленте продано брендам до того, как вы его потратили.",
+ mechanism:"Отражение: тысячи отражений, в которых трудно вспомнить собственное лицо.",
+ crack:"Сравнение с витриной проигрывается всегда — витрина для этого и собиралась."},
+
+{keys:["мода","тренд","фэшн","fashion","одежда","стиль"], type:"idea",
+ epithet:"Бог сезонной смены", domain:"КРАСОТА", proto:"Вертумн — смена времён", godOf:"chanel",
+ sign:"Смена силуэтов, о которой объявляют за полгода.",
+ signifier:"Гармония, которая устареет через сезон.",
+ secondary:"Человек «в тренде» — тот, кто «с этим временем».",
+ commodity:"Постоянная замена: купленная вещь уже ждёт замены.",
+ mechanism:"Календарь: обновление по расписанию превращает вкус в подписку.",
+ crack:"Тренд требует денег, но не требует объяснения — и этим удобен."},
+
+{keys:["красота","совершенство","идеал","эстетика"], type:"idea",
+ epithet:"Бог тысячи отражений", domain:"КРАСОТА", proto:"Афродита — совершенство", godOf:"chanel",
+ sign:"Отражение в экране — и ещё одно отражение рядом.",
+ signifier:"Совершенство, которое кажется доступным.",
+ secondary:"Красота как мерило: «если ты не красив, значит, не старался».",
+ commodity:"Косметика, хирургия, фильтры: обещание изменить не только лицо.",
+ mechanism:"Канон: образ нормы повторяется, пока не становится критерием.",
+ crack:"Канон устанавливает границы, которые никто не называет вслух."},
+
+{keys:["успех","успешный успех","карьера","самореализация","достигаторство"], type:"idea",
+ epithet:"Бог вчерашнего кейса", domain:"ВЛАСТЬ", proto:"Виктория — победа", godOf:"berneys",
+ sign:"Слово, которое повторяют чаще, чем определяют.",
+ signifier:"Точка, в которой можно остановиться и сказать: «я всё».",
+ secondary:"Успех как обязательство: неуспешный «виноват сам».",
+ commodity:"Курсы, марафоны, истории «как я к этому пришёл».",
+ mechanism:"История: успешный кейс переписывают так, будто другого пути не существовало.",
+ crack:"Миф скрывает случай, неудачи и всех, кто проиграл, повторяя те же шаги."},
+
+{keys:["свобода","независимость","бунт","протест"], type:"idea",
+ epithet:"Бог продаваемого выбора", domain:"СВОБОДА", proto:"Либертас — свобода", godOf:"esenin",
+ sign:"Разомкнутые руки на фоне неба.",
+ signifier:"Состояние, при котором никто не решает за тебя.",
+ secondary:"«Быть собой» — уже потребительский выбор.",
+ commodity:"Подписки, стили, «авторские» маршруты: освобождение в подарок при заказе.",
+ mechanism:"Парадокс одобрения: независимость проверяют по количеству лайков.",
+ crack:"Свобода, которую продают, всегда ограничена каталогом."},
+
+{keys:["спорт","фитнес","тренировка","зал","спортзал","бег"], type:"idea",
+ epithet:"Бог нового тела", domain:"БЕССМЕРТИЕ", proto:"Геракл — подвиг", godOf:"mayak",
+ sign:"Тренажёрный зал, зеркало, вода. Кажется, вода здесь важнее штанги.",
+ signifier:"Дисциплина, которую видно.",
+ secondary:"Тело как проект: его состояние якобы отвечает за твою ценность.",
+ commodity:"Абонементы, добавки, трекеры: подписка на «нового себя».",
+ mechanism:"Формула «до/после»: результат выставляют как личную победу, скрывая его стоимость.",
+ crack:"Тело слушается не мотивации, а генетики, денег и времени — о них миф молчит."},
+
+{keys:["космос","космoc","марс","ракета","space","галактика"], type:"idea",
+ epithet:"Бог запасного неба", domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", proto:"Уран — небо", godOf:"musk",
+ sign:"Чёрная бесконечность и голубой шар на её фоне.",
+ signifier:"Будущее, в котором человечество «продолжится».",
+ secondary:"Космос как обещание: если здесь всё испорчено, там можно начать заново.",
+ commodity:"Билеты (будущие), мерч, стартапы: доля великого плана.",
+ mechanism:"Устремление: взгляд вверх прощает проблемы внизу.",
+ crack:"Мечта о новой планете иногда оправдывает то, что старую не берегут."},
+
+{keys:["путешествие","туризм","поездка","путешествия","отпуск","travelling"], type:"idea",
+ epithet:"Бог отложенной жизни", domain:"СВОБОДА", proto:"Гермес — дорога", godOf:"esenin",
+ sign:"Чемодан, который собран заранее.",
+ signifier:"Жизнь, которая «пока не началась».",
+ secondary:"В путешествии человек «открывается заново» — хотя маршрут расписан заранее.",
+ commodity:"Билеты, страховки, «авторские» маршруты.",
+ mechanism:"Отложенность: счастье всегда в следующей поездке.",
+ crack:"Кадр для ленты важнее момента: сначала публикуют, потом переживают."}
+];
+</script>
+
+<script>
+// ============ БАНК АРХЕТИПОВ: КАТЕГОРИИ ============
+const KIND_SIGN = {
+ thing:["У «{X}» есть узнаваемая форма, которая повторяется в миллионах копий — от витрин до карманов. Форма проста до безупречности, и потому её уже не замечают.","«{X}» берут в руки каждый день — а значит, он давно перестал быть предметом и стал жестом.","Форма «{X}» почти не изменилась за десятилетия. Культура любит не изменение, а стабильность: так удобнее достраивать значение.","«{X}» встречается в кадрах рекламы, в чужих сторис и в вашей собственной руке — и каждый раз выглядит как решение, а не как предмет."],
+ person:["Человек по имени «{X}» знаком вам прежде, чем вы успели его проверить. Знакомство состоялось через экран.","За именем «{X}» стоит человек, о котором вы знаете больше, чем он о вас.","«{X}» произносит слово «будущее» чаще, чем слово «настоящее» — и публика это любит.","Лицо «{X}» уже трудно отделить от его роли: вы видите не человека, а функцию."],
+ idea:["Явление «{X}» описывают через скорость: быстрее, умнее, раньше. Описывать иначе уже не получается.","Слово «{X}» звучит в речи так часто, что перестало требовать пояснения.","«{X}» обещает, что сложное станет простым, а выбор — техническим.","«{X}» называют естественным положением вещей — это первый признак мифа."],
+};
+
+const CATS = [
+{k:"tech", label:"технология", keys:["технолог","гаджет","приложени","стартап","робот","дрон","vr","блокчейн","крипто","биткоин","электромобил","инженер","компьютер","гадж","игр","vibe-coding","код","программ","автоматизац"], domain:"ИЗОБРЕТАТЕЛЬНОСТЬ", godOf:"musk",
+ protos:["Гефест — божественный кузнец","Дедал — мастер крыльев","Пандора — выпуск неизвестного"],
+ epithets:["Бог обновляемой версии","Хранитель обещанного удобства","Бог стёртой границы"],
+ signifier:["«{X}» подают как продолжение человеческих способностей — всегда беспроблемное и всегда новое.","Образ «{X}» собирается вокруг обещания: скоро всё неудобное исчезнет."],
+ secondary:["Вера в то, что прогресс разрешает вопросы раньше, чем их успели задать.","Надежда, что сложное станет простым, а выбор — техническим."],
+ commodity:["Продаётся не функция, а доля будущего: подписки, обновления, «ранний доступ».","Товар — не вещь, а билет в версию мира, где «{X}» уже везде."],
+ mechanism:["Олицетворение: технике приписывают желание и намерение — так с ней проще говорить.","Показ прогресса: демо вместо честной спецификации."],
+ crack:["Приписывая машине желания, человек готовится отдать ей и ответственность.","Каждая новая версия «{X}» делает прошлую устаревшей — включая обещания, в которые вы уже поверили."]},
+
+{k:"money", label:"деньги и статус", keys:["бизнес","маркетинг","продаж","богат","инвест","недвижимост","бренд","карьер","премиум","люкс","роскош","элитн","доход","дивиденд"], domain:"ВЛАСТЬ", godOf:"berneys",
+ protos:["Плутос — изобилие","Мидас — всё в золото","Виктория — победа"],
+ epithets:["Бог завтрашнего дня","Хранитель цифры на экране","Бог лестницы без последней ступени"],
+ signifier:["«{X}» показывают через метры, цифры и ручки дверей, которые закрываются с правильным звуком.","Вокруг «{X}» собирается образ человека, у которого уже всё решено."],
+ secondary:["Человек «в теме {X}» якобы видит мир яснее остальных.","Статус воспринимается как зрелость, хотя это просто положение в системе."],
+ commodity:["Продаётся обещание, что завтра можно будет сегодня.","Товар — доступ: к клубу, к разговору, к очереди без очереди."],
+ mechanism:["Кейс: успешный пример переписывают так, будто другого пути не было.","Скрытая лестница: этапы подъёма показывают, а цену подъёма — нет."],
+ crack:["История «{X}» всегда умалчивает о тех, кто проиграл, повторяя те же шаги.","Свобода, купленная в долг, обычно остаётся в долгу."]},
+
+{k:"love", label:"любовь и близость", keys:["любов","отношени","свидани","брак","семья","дружб","сердц","страст","романтик","знакомств","чувств"], domain:"ЖЕЛАНИЕ", godOf:"ysl",
+ protos:["Эрот — связь","Венера — страсть","Гименей — союз"],
+ epithets:["Хранитель недостающего","Бог чужого сценария","Бог розового фильтра"],
+ signifier:["«{X}» показывают через два силуэта и закат — кадр, отшлифованный тысячами фильмов.","Культура заранее пишет, как «{X}» должен выглядеть."],
+ secondary:["Считается, что в «{X}» человек «наконец настоящий», а всё прочее — подготовка.","«{X}» воспринимается как мерило: кто не в нём, «что-то пропустил»."],
+ commodity:["Продают не чувство, а его атрибуты: подарки, ритуалы, «правильные» жесты.","Товар — страх пропустить: приложения и курсы обещают не опоздать."],
+ mechanism:["Сценарий: сюжет о «{X}» усваивается раньше собственного опыта.","Сравнение: свою историю меряют по чужому сценарию."],
+ crack:["Реальный опыт редко повторяет сценарий — и терпит поражение именно из-за расхождения с ним.","Чем точнее следуют образцу «{X}», тем заметнее, что образец снимал рекламу, а не жизнь."]},
+
+{k:"body", label:"тело и здоровье", keys:["здоров","тело","диет","питани","вес","стройн","йога","медитац","сон","зож","организм","психик","терапи","психолог","тревог"], domain:"БЕССМЕРТИЕ", godOf:"mayak",
+ protos:["Геракл — подвиг","Асклепий — исцеление","Гигиея — здоровье"],
+ epithets:["Бог нового тела","Хранитель версии себя 2.0","Бог утренней дисциплины"],
+ signifier:["«{X}» показывают через результат «до/после» — и всегда без расписания, за которым он достигнут.","Образ «{X}» — это дисциплина, которую видно."],
+ secondary:["Тело и состояние якобы отвечают за ценность человека.","«{X}» воспринимается как мораль: кто не в форме, «не старался»."],
+ commodity:["Продают подписку на «нового себя»: абонементы, добавки, трекеры.","Товар — ощущение контроля над телом, которого обычно больше на словах."],
+ mechanism:["Формула «до/после»: результат выставляют как личную победу, скрывая его стоимость.","Норма: чужое тело становится критерием своего."],
+ crack:["Тело слушается не мотивации, а генетики, денег и времени — о них миф молчит.","Миф «{X}» продаёт контроль, а покупается обычно тревога."]},
+
+{k:"food", label:"еда и вкус", keys:["ед","чай","пицц","бургер","фастфуд","десерт","сладост","вино","алкогол","пив","шоколад","ресторан","кухн","ужин","завтрак","сыр","хлеб","мясо","веган"], domain:"ЖЕЛАНИЕ", godOf:"ysl",
+ protos:["Деметра — урожай","Бахус — пир","Гестия — очаг"],
+ epithets:["Бог малого ритуала","Хранитель правильного вкуса","Бог раздолья на тарелке"],
+ signifier:["«{X}» подают через сцену: свет, руки, момент, который собирается специально.","Вкус «{X}» описывают словами, взятыми у путешествий, а не у еды."],
+ secondary:["За «{X}» закрепляют характер: кто это выбирает, тот «такой-то» человек.","«{X}» как пропуск в «осознанную жизнь»."],
+ commodity:["Продают не вкус, а принадлежность: к кухне, к традиции, к среде.","Товар — ритуал, который можно повторять дома за меньшие деньги, чем в оригинале."],
+ mechanism:["Ритуал: повторение превращает привычку в идентичность.","Присвоение: чужая традиция становится личным достижением."],
+ crack:["Зависимость переименована в «любовь к вкусу» — это самая тихая правка мифа.","Импорт редко доносит до дома то, что было в истоке: контекст остаётся за границей."]},
+
+{k:"style", label:"стиль и внешность", keys:["стил","одеж","обув","сумк","шопинг","макияж","парфюм","духи","украшени","тату","причёск","причес","гардероб","винтаж"], domain:"КРАСОТА", godOf:"chanel",
+ protos:["Афродита — совершенство","Вертумн — смена времён","Адонис — юная красота"],
+ epithets:["Бог сезонной смены","Хранитель непрошеного канона","Бог тысяч отражений"],
+ signifier:["«{X}» показывают через кадр, где всё удачно — и кадр этот сотрут через сезон.","Вокруг «{X}» строят обещание: с этим вы наконец «в себе»."],
+ secondary:["Человек «в {X}» якобы «с этим временем» — хотя время уже прошло.","Внешность воспринимается как отчёт о стараниях."],
+ commodity:["Продают постоянную замену: купленная вещь уже ждёт замены.","Товар — не предмет, а освобождение от чувства «отстал»."],
+ mechanism:["Календарь: обновление по расписанию превращает вкус в подписку.","Канон: образ нормы повторяется, пока не становится критерием."],
+ crack:["Сравнение с витриной проигрывается всегда — витрина для этого и собиралась.","Канон устанавливает границы, которые никто не называет вслух."]},
+
+{k:"power", label:"власть и слава", keys:["власт","политик","президент","король","империя","влиян","авторитет","лидер","харизмат","кумир","звезд","шоу-бизнес","селеб","инфлюенсер","блогер"], domain:"ВЛИЯНИЕ", godOf:"berneys",
+ protos:["Зевс — власть без манифеста","Фама — богиня слуха","Цезарь — триумф"],
+ epithets:["Бог толпы в одном человеке","Хранитель чужого внимания","Бог триумфа без аннотации"],
+ signifier:["«{X}» подают как событие, а не как процесс: результаты есть, механики не видно.","Вокруг «{X}» строят ауру доступа: не к нему — через него."],
+ secondary:["Слава воспринимается как подтверждение: «значит, я существую правильно».","Власть «{X}» кажется естественной — это и есть миф в чистом виде."],
+ commodity:["Продают внимание: его можно продать, купить и потерять за один скандал.","Товар — причастность: подписка, лайв, «личная встреча»."],
+ mechanism:["Повторение: имя произносят до тех пор, пока оно не станет понятием.","Инженерия согласия: события сконструированы так, чтобы их перепечатывали."],
+ crack:["Слава не спрашивает у своих носителей, что они о ней думают.","Убери повторы на месяц — и «{X}» окажется конструкцией, а не природой."]},
+
+{k:"knowledge", label:"знание и опыт", keys:["знан","образован","университет","учеб","книг","школ","экзамен","диплом","философ","наук","курс","лектор","наставник","эксперт"], domain:"МУДРОСТЬ", godOf:"wintour",
+ protos:["Афина — хранительница врат","Аполлон — оракул","Сократ — вопрос"],
+ epithets:["Бог готовых ответов","Хранитель закрытой полки","Бог жюри"],
+ signifier:["«{X}» подают через образ того, кто «уже понял» — и теперь может объяснить за вас.","Знание «{X}» продается с обещанием: после этого вы будете мыслить иначе."],
+ secondary:["Считается, что обладатель «{X}» видит глубже — хотя глубина не выдаётся вместе с сертификатом.","«{X}» воспринимается как полноценность: без него человек «недо-»."],
+ commodity:["Продают сервис: думание как услуга, вопросы как опция.","Товар — доступ: к полке, к курсу, к сообществу избранных."],
+ mechanism:["Жюри: одобрение узкого круга становится «мнением всех».","Готовый ответ: вопрос переформулируют так, чтобы ответ уже лежал в каталоге."],
+ crack:["Обладая всеми ответами, люди всё чаще боятся задавать вопросы — таков побочный эффект «{X}».","Знание, купленное как услуга, обычно кончается вместе с подпиской."]},
+
+{k:"art", label:"искусство и зрелище", keys:["искусств","музык","кино","театр","литерат","стих","поэт","художн","картин","творчест","альбом","фото","фотограф","сериал","фильм","концерт","выставк"], domain:"БЕЗУМИЕ", godOf:"dali",
+ protos:["Дионис — ритуал зрелища","Аполлон — форма и мера","Муза — вдохновение"],
+ epithets:["Бог сценического безумия","Хранитель ритуала зала","Бог повторяемого бунта"],
+ signifier:["«{X}» показывают через момент чистой искренности — который, разумеется, снят с нескольких дублей.","Вокруг «{X}» строят образ гения, который «видел раньше»."],
+ secondary:["Скандальность воспринимается как вид ясновидения.","«{X}» считается единственной честной территорией — и миф живёт именно на этой вере."],
+ commodity:["Продают бунт как товарный знак: тот же жест по расписанию.","Товар — причастность к «настоящему искусству»."],
+ mechanism:["Скандал-ритуал: чем абсурднее жест, тем быстрее он становится новостью.","Сцена: прием повторяют, пока жест не станет ожидаемым."],
+ crack:["Повторяющееся безумие — уже не безумие, а программа.","Миф «{X}» умалчивает, сколько расчёта стоит за каждым «случайным» жестом."]},
+
+{k:"nature", label:"природа и путь", keys:["природ","лес","море","океан","гор","экологи","животн","ветер","дождь","снег","солнц","лун","огонь","вода","путешест","поход","дач","сад","рыбал","охот","свобод","независимост"], domain:"СВОБОДА", godOf:"esenin",
+ protos:["Либертас — свобода","Пан — дух сада","Гелиос — солнце"],
+ epithets:["Бог отложенной жизни","Хранитель разомкнутых рук","Бог обещанного простора"],
+ signifier:["«{X}» показывают через кадр без людей — будто место существует для вас одного.","Вокруг «{X}» собирают образ жизни, которая «пока не началась»."],
+ secondary:["Считается, что в «{X}» человек «открывается заново» — хотя маршрут уже расписан.","«{X}» как отказ от городской жизни, который чаще всего продаётся городской жизнью."],
+ commodity:["Продают билет: к «настоящему», к «себе», к месту, где наконец «все неважно».","Товар — отложенность: счастье всегда в следующей поездке."],
+ mechanism:["Отложенность: настоящее перенесено в будущее время.","Кадр: сначала публикуют, потом переживают."],
+ crack:["Кадр для ленты важнее момента — и «{X}» превращается в декорацию для него.","Место, куда едут за свободой, обычно перенасыщено теми, кто туда уже приехал."]},
+
+{k:"time", label:"время и память", keys:["врем","возраст","старост","молодост","детств","будущ","прошл","памят","ностальг","истори","юбилей","годовщин","дедлайн"], domain:"БЕССМЕРТИЕ", godOf:"mayak",
+ protos:["Кронос — время","Лета — река забвения","Мнемозина — память"],
+ epithets:["Бог нехватки","Хранитель последней страницы","Бог утекающего ресурса"],
+ signifier:["«{X}» показывают как ресурс, который «уходит» — и который нужно успеть.","Вокруг «{X}» строят тревогу: не успеть — значит потерять."],
+ secondary:["Управляющий «{X}» якобы управляет жизнью.","«{X}» воспринимается как судья, который всегда прав."],
+ commodity:["Продают планировщики, курсы, часы как статус.","Товар — избавление от тревоги «не успеваю»."],
+ mechanism:["Дефицит: то, чего не хватает, немедленно превращается в товар.","Суд: прошлое «{X}» записывают так, будто исход был очевиден."],
+ crack:["Чем сильнее борьба за «{X}», тем меньше его остаётся на жизнь.","Миф «{X}» обещает контроль над тем, что не контролируется никем."]},
+
+{k:"fear", label:"страх и катастрофа", keys:["страшн","страх","опасн","война","катастроф","вирус","пандем","паник","апокалипс","конец света","зомби","кризис","провал","ошибка"], domain:"БЕЗУМИЕ", godOf:"dali",
+ protos:["Паника — бог паники","Фобос — страх","Хаос — исходный беспорядок"],
+ epithets:["Бог входящей тревоги","Хранитель невидимой опасности","Бог вечного «уже поздно»"],
+ signifier:["«{X}» подают через кадр, в котором не разобрать ничего — и потому страшно всё.","Вокруг «{X}» собирают сцену, в которой зритель всегда опоздал."],
+ secondary:["Считается, что знание о «{X}» — уже защита.","«{X}» воспринимается как показатель: кто не боится, «не понимает»."],
+ commodity:["Продают безопасность: подписки, курсы, хранилища, советы.","Товар — внимание: страх удерживает дольше, чем радость."],
+ mechanism:["Нагнетание: повторение страшного кадра делает его привычным фоном.","Тайна: недоговорённость заполняется самым плохим сценарием."],
+ crack:["Тревога — плохой советчик, но лучший маркетолог: «{X}» продаётся в связке с ней всегда.","Миф «{X}» не требует доказательств — он живёт на их отсутствии."]},
+
+];
+
+const APH = [
+"Запись смотрителя: миф не просит согласия — он просто повторяется.",
+"Запись смотрителя: чем естественнее кажется «{X}», тем внимательнее стоит читать.",
+"Запись смотрителя: у каждого мифа есть авторы; у лучших — целые отделы.",
+"Запись смотрителя: «{X}» кажется естественным — это первый признак того, что над ним поработали."
+];
+
+// ============ МАШИНА: ЛОГИКА ============
+const norm = s => s.toLowerCase().replace(/ё/g,"е").replace(/[^\wа-яa-z\- ]+/gi," ").replace(/\s+/g," ").trim();
+const hash = s => { let h=2166136261; for(let i=0;i<s.length;i++){h^=s.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; };
+const rngOf = seed => () => (seed = (Math.imul(seed,48271)>>>0), (seed%100000)/100000);
+const pick = (arr, r) => arr[Math.floor(r()*arr.length)%arr.length];
+const fill = (t,X) => t.replace(/\{X\}/g,"«"+X+"»");
+
+function findEntry(q){
+ const n = norm(q);
+ for(const e of CATALOG) for(const k of e.keys) if(norm(k)===n || (n.length>3 && norm(k).includes(n))) return {e, level:"exact"};
+ let best=null;
+ for(const c of CATS) for(const k of c.keys) if(n.includes(k)) { if(!best || k.length>best.key.length) best={c,key:k}; }
+ return best ? {c:best.c, level:"category"} : {level:"draft"};
+}
+
+function dossierFor(input, kind){
+ const X = input.trim();
+ const r = rngOf(hash(norm(input)+"|"+kind)) || rngOf(hash(norm(input)));
+ const f = findEntry(input);
+ let d;
+ if(f.level==="exact"){
+   const e=f.e;
+   d = {name:e.epithet+" «"+X+"»", domain:e.domain, proto:e.proto, level:"ТОЧНОЕ ДОСЬЕ · АРХИВ",
+        sign:e.sign, signifier:e.signifier, secondary:e.secondary, commodity:e.commodity,
+        mechanism:e.mechanism, crack:e.crack, godOf:e.godOf};
+ } else if(f.level==="category"){
+   const c=f.c;
+   d = {name:pick(c.epithets,r)+" «"+X+"»", domain:c.domain, proto:pick(c.protos,r), level:"ГИПОТЕЗА АРХИВА",
+        sign:fill(pick(KIND_SIGN[kind],r),X), signifier:fill(pick(c.signifier,r),X),
+        secondary:fill(pick(c.secondary,r),X), commodity:fill(pick(c.commodity,r),X),
+        mechanism:fill(pick(c.mechanism,r),X), crack:fill(pick(c.crack,r),X), godOf:c.godOf};
+ } else {
+   d = {name:"Хранитель «"+X+"»", domain:"НЕИЗВЕСТНОЕ", proto:"Вне карты", level:"ЧЕРНОВИК АРХИВА",
+        sign:fill(pick(KIND_SIGN[kind],r),X),
+        signifier:"Смотритель архива честен: полного досье на «{X}» пока нет. Культура, скорее всего, только начинает собирать вокруг него значение.".replace("{X}",X),
+        secondary:"Предположим, миф уже в сборке: тогда вокруг «{X}» формируется значение, которое кто-то сформулирует первым — и его повторят остальные.",
+        commodity:"Если «{X}» станет мифом, первым товаром будет тот, кто первым объяснит, зачем он нужен.",
+        mechanism:"Пока не описан. Возможно, вы его и опишете — архив пополняется.",
+        crack:"Проверьте сами: попробуйте объяснить «"+X+"» без прилагательных — останется ли что-то, кроме функции?",
+        godOf:null};
+ }
+ d.input=X; d.kind=kind;
+ return d;
+}
+
+// ============ РЕНДЕР ============
+let kind="thing";
+const $=id=>document.getElementById(id);
+
+function renderGrid(){
+ const customs = JSON.parse(localStorage.getItem("numen_cults")||"[]");
+ $("grid").innerHTML = GODS.concat(customs).map(g=>{
+  const imgHtml = g.image
+    ? `<img src="${img(g.image)}" alt="${g.person}" loading="lazy" onerror="this.outerHTML='<div class=&quot;mono-fallback&quot;>${(g.person||g.domain)[0]}<\/div>'">`
+    : `<div class="mono-fallback">${(g.person||"н")[0]}</div>`;
+  return `<div class="card" data-id="${g.id}"><div class="ph">${imgHtml}<span class="tag">[${g.domain.toLowerCase()}]</span></div>
+   <div class="cbody"><div class="cname">${g.person}</div><div class="crole">${g.antik||""}</div><div class="cmore">открыть досье →</div></div></div>`;
+ }).join("");
+ document.querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>openDossier(c.dataset.id)));
+}
+
+function openDossier(id){
+ const g = GODS.find(x=>x.id===id) || JSON.parse(localStorage.getItem("numen_cults")||"[]").find(x=>x.id===id);
+ if(!g) return;
+ const imgHtml = g.image
+  ? `<img src="${img(g.image)}" alt="${g.person}" onerror="this.outerHTML='<div class=&quot;mono-fallback&quot;>${(g.person||"н")[0]}<\/div>'">`
+  : `<div class="mono-fallback">${(g.person||"н")[0]}</div>`;
+ $("sheetBody").innerHTML = `
+  <div class="doc" style="margin-bottom:18px">ДОСЬЕ · [${g.domain.toLowerCase()}]</div>
+  <div class="row">${imgHtml}
+   <div><div class="cname" style="font-size:32px">${g.person}</div>
+   <div class="crole">${g.antik||""}</div></div></div>
+  <div class="dlabel">Историческая личность</div><div class="dtext">${g.who}</div>
+  <div class="dlabel">Мифологический образ</div><div class="dtext">${g.myth}</div>
+  <div class="dlabel">Механизм мифологизации</div><div class="dtext">${g.mechanism}</div>
+  <div class="dlabel">Запись архива</div><div class="dquote">${g.note}</div>
+  <a class="dlink" href="${g.wiki}" target="_blank" rel="noopener">→ Проверить источник</a>`;
+ $("modal").classList.add("open");
+ document.body.style.overflow="hidden";
+}
+$("closeX").onclick = ()=>{ $("modal").classList.remove("open"); document.body.style.overflow=""; };
+$("modal").onclick = e=>{ if(e.target===$("modal")) $("closeX").onclick(); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") $("closeX").onclick(); });
+
+// Машина
+document.querySelectorAll(".kinds button").forEach(b=>b.addEventListener("click",()=>{
+ document.querySelectorAll(".kinds button").forEach(x=>x.classList.remove("on"));
+ b.classList.add("on"); kind=b.dataset.kind;
+}));
+$("chips").innerHTML = ["матча","деньги","Бернейс","любовь","нейросеть","Дали","космос","Кардашьян"].map(t=>`<button data-t="${t}">${t}</button>`).join("");
+$("chips").addEventListener("click",e=>{ if(e.target.dataset.t){ $("inp").value=e.target.dataset.t; run(); }});
+
+let lastDossier=null;
+function run(){
+ const q = $("inp").value.trim();
+ if(!q) return;
+ $("run").disabled = true;
+ const d = dossierFor(q, kind);
+ lastDossier = d;
+ const ch = $("chain");
+ ch.innerHTML = [
+  ["Знак","шаг 01",d.sign],
+  ["Означающее","шаг 02",d.signifier],
+  ["Вторичное значение","шаг 03",d.secondary],
+  ["Товар","шаг 04",d.commodity]
+ ].map((s,i)=>`<div class="step" id="st${i}"><div class="sn">${s[1]}</div><h4>${s[0]}</h4><p>${s[2]}</p><div class="arrow">${i<3?"↓ переход к следующему уровню смысла":""}</div></div>`).join("");
+ setTimeout(()=>{document.getElementById("st0").classList.add("vis")},80);
+ setTimeout(()=>{document.getElementById("st1").classList.add("vis")},900);
+ setTimeout(()=>{document.getElementById("st2").classList.add("vis")},1700);
+ setTimeout(()=>{document.getElementById("st3").classList.add("vis")},2500);
+ setTimeout(()=>{renderCert(d); $("run").disabled=false; $("chain").scrollIntoView({behavior:"smooth",block:"start"});},2600);
+}
+$("run").addEventListener("click",run);
+$("inp").addEventListener("keydown",e=>{ if(e.key==="Enter") run(); });
+
+function renderCert(d){
+ const imgHtml = d.godOf
+  ? `<img class="cp" src="${img(GODS.find(g=>g.id===d.godOf).image)}" onerror="this.outerHTML='<div class=&quot;mono-fallback&quot;>§<\/div>'">`
+  : `<div class="mono-fallback">§</div>`;
+ $("certImg").innerHTML = imgHtml;
+ $("certName").textContent = d.name;
+ $("certDesc").textContent = `${d.domain} · ${d.proto} · ДОСЬЕ № ${1000+hash(norm(d.input))%9000} · ${d.level}`;
+ $("certBody").innerHTML = `
+  <p><b style="font-weight:500;color:#fff">Механизм мифологизации:</b> ${d.mechanism}</p>
+  <p><b style="font-weight:500;color:#fff">Трещина в мифе:</b> ${d.crack}</p>
+  <p style="font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:14px">${fill(pick(APH,rngOf(hash(d.input))),d.input)}</p>`;
+ $("cert").classList.add("vis");
+ $("shareBtn").classList.remove("done"); $("shareBtn").textContent="Скопировать ссылку на божество";
+ $("addBtn").classList.remove("done"); $("addBtn").textContent="Внести в пантеон";
+}
+$("againBtn").onclick = ()=>{ $("chain").innerHTML=""; $("cert").classList.remove("vis"); $("inp").value=""; $("inp").focus(); };
+
+$("shareBtn").onclick = ()=>{
+ const url = location.origin + location.pathname + "?god=" + encodeURIComponent(lastDossier.input) + "&k=" + lastDossier.kind;
+ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(
+   ()=>{ $("shareBtn").textContent="Ссылка скопирована ✓"; $("shareBtn").classList.add("done"); },
+   ()=>{ prompt("Скопируйте ссылку:", url); });
+};
+$("addBtn").onclick = ()=>{
+ if(!lastDossier) return;
+ const cults = JSON.parse(localStorage.getItem("numen_cults")||"[]");
+ if(cults.some(c=>c.id==="cult:"+norm(lastDossier.input))) { $("addBtn").textContent="Уже в архиве ✓"; $("addBtn").classList.add("done"); return; }
+ cults.push({id:"cult:"+norm(lastDossier.input), custom:true, domain:lastDossier.domain,
+   person:lastDossier.name, antik:lastDossier.proto, mechanism:lastDossier.mechanism,
+   who:"Внесено через Машину мифологизации. Исходный запрос: «"+lastDossier.input+"» ("+ (lastDossier.kind==="thing"?"вещь":lastDossier.kind==="person"?"личность":"явление") +").",
+   myth:lastDossier.secondary, note:lastDossier.crack, wiki:"", image:null});
+ localStorage.setItem("numen_cults",JSON.stringify(cults));
+ renderGrid();
+ $("addBtn").textContent="Внесено в пантеон ✓"; $("addBtn").classList.add("done");
+};
+
+// deep-link
+window.addEventListener("load",()=>{
+ renderGrid();
+ const p = new URLSearchParams(location.search);
+ if(p.get("god")){
+   $("inp").value = p.get("god");
+   if(p.get("k") && KIND_SIGN[p.get("k")]) { kind=p.get("k");
+     document.querySelectorAll(".kinds button").forEach(b=>b.classList.toggle("on", b.dataset.kind===kind)); }
+   setTimeout(run,600);
+   $("mashina").scrollIntoView({behavior:"smooth"});
+ }
+});
+</script>
+</body>
+</html>
